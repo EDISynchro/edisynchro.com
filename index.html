@@ -3,53 +3,426 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mentions légales — EDISYNCHRO</title>
+  <title>Dashboard Logement — EDISYNCHRO (Desktop)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#071025; --muted:#94a3b8; --accent:#6d28d9; --accent-2:#06b6d4; --glass: rgba(255,255,255,0.04);
+    }
+    html,body,#app{height:100%}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1200px 600px at 10% 10%, rgba(99,102,241,0.08), transparent), linear-gradient(180deg,#061028 0%, #07102b 100%); color:#e6eef8}
+    /* Desktop-only (hide on small) */
+    @media (max-width: 1000px){ #app{display:none} #mobileNotice{display:flex} }
+    #mobileNotice{display:none;min-height:100vh;background:linear-gradient(180deg,#071025,#071133);color:#cbd5e1;align-items:center;justify-content:center;padding:24px}
+    .glass{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); backdrop-filter: blur(6px); border-radius:14px}
+    .muted{color:var(--muted)}
+    .pill{padding:.25rem .6rem;border-radius:999px;font-weight:700;font-size:12px}
+    .accent{background:linear-gradient(90deg,var(--accent),#8b5cf6); color:white}
+    .accent-2{background:linear-gradient(90deg,var(--accent-2),#0891b2); color:white}
+    .kpi{border-radius:12px;padding:18px}
+    .tiny{font-size:12px}
+    .fade-in{animation:fade .35s ease both}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    /* custom scrollbar */
+    main::-webkit-scrollbar{height:8px;width:8px}
+    main::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:999px}
+    .btn{padding:.5rem .75rem;border-radius:10px;font-weight:600}
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
-  <!-- reuse navbar -->
-  <header class="bg-white shadow">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/" class="inline-block text-xl font-bold">EDISYNCHRO</a>
-      <nav class="hidden md:flex gap-4 text-sm">
-        <a href="/" class="text-gray-700 hover:text-black">Accueil</a>
-        <a href="/mentions-legales.html" class="text-gray-700 hover:text-black">Mentions légales</a>
-      </nav>
+<body>
+  <div id="mobileNotice">
+    <div class="max-w-xl text-center">
+      <h2 class="text-2xl font-semibold mb-2">Dashboard — Version Bureau uniquement</h2>
+      <p class="muted">Ce tableau de bord est optimisé pour grand écran. Ouvre-le sur un poste de travail pour profiter de l'interface complète.</p>
     </div>
-  </header>
+  </div>
 
-  <!-- Breadcrumb -->
-  <div class="max-w-6xl mx-auto px-4 mt-6">
-    <nav class="text-sm text-gray-500" aria-label="Breadcrumb">
-      <ol class="list-reset flex">
-        <li><a href="/" class="hover:underline">Accueil</a></li>
-        <li><span class="mx-2">/</span></li>
-        <li>Mentions légales</li>
-      </ol>
-    </nav>
+  <div id="app" class="h-full flex">
 
-    <main class="bg-white mt-4 p-6 rounded shadow">
-      <h1 class="text-2xl font-bold">Mentions légales</h1>
-      <p class="mt-4 text-sm">Raison sociale : EDISYNCHRO — Siège social : Beauvais — SIRET : 000 000 000 00000 (exemple).</p>
+    <!-- SIDEBAR compact -->
+    <aside class="w-72 p-6 flex flex-col gap-6 glass shadow-xl">
+      <div class="flex items-center gap-3">
+        <div class="h-12 w-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-600 font-extrabold">ED</div>
+        <div>
+          <div class="font-bold text-lg">EDISYNCHRO</div>
+          <div class="tiny muted">Dashboard — logement</div>
+        </div>
+      </div>
 
-      <h2 class="mt-6 font-semibold">Éditeur</h2>
-      <p class="text-sm">EDISYNCHRO — Adresse — Email : support@edisynchro.com — Téléphone : 00 00 00 00 00</p>
+      <div class="p-3 rounded-lg bg-gradient-to-b from-white/3 to-transparent">
+        <div class="tiny muted">Adresse</div>
+        <div id="addrSidebar" class="font-semibold">25 rue des déportés, 60000 Beauvais</div>
+        <div class="mt-2 flex gap-2 items-center">
+          <div class="pill accent">Entrée: <span id="entryP" class="ml-2 font-medium">11/06/2025</span></div>
+          <div class="pill" style="background:rgba(255,255,255,0.03)">JAP: <span id="japP" class="ml-2 font-medium">06/06/2025</span></div>
+        </div>
+      </div>
 
-      <h2 class="mt-6 font-semibold">Hébergement</h2>
-      <p class="text-sm">Site hébergé via GitHub Pages (https://pages.github.com) — Fournisseur : GitHub, Inc.</p>
+      <nav class="flex-1">
+        <ul class="space-y-2">
+          <li><button data-tab="overview" class="w-full text-left btn bg-transparent hover:bg-white/2 rounded flex items-center gap-3"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" class="opacity-80"><path d="M3 13h8V3H3v10zM13 21h8V11h-8v10zM3 21h8v-6H3v6zM13 3v6h8V3h-8z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg> Vue générale</button></li>
+          <li><button data-tab="documents" class="w-full text-left btn bg-transparent hover:bg-white/2 rounded flex items-center gap-3"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M7 3h8l5 5v13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg> Documents</button></li>
+          <li><button data-tab="emails" class="w-full text-left btn bg-transparent hover:bg-white/2 rounded flex items-center gap-3"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 8l9 6 9-6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg> E-mails</button></li>
+          <li><button data-tab="hlm" class="w-full text-left btn bg-transparent hover:bg-white/2 rounded flex items-center gap-3"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 21V8l9-5 9 5v13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg> HLM / CAF</button></li>
+          <li><button data-tab="settings" class="w-full text-left btn bg-transparent hover:bg-white/2 rounded flex items-center gap-3"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg> Paramètres</button></li>
+        </ul>
+      </nav>
 
-      <h2 class="mt-6 font-semibold">Propriété intellectuelle</h2>
-      <p class="text-sm">Tous droits réservés. Reproduction interdite sans autorisation.</p>
+      <div class="space-y-2">
+        <div class="tiny muted">Actions rapides</div>
+        <div class="flex gap-2">
+          <button id="quickAttest" class="btn accent px-3">Attestation</button>
+          <button id="quickExport" class="btn" style="background:rgba(255,255,255,0.03)">Exporter</button>
+        </div>
+      </div>
 
-      <!-- Ajoute les clauses réelles selon ton activité (RGPD, contact DPO, etc.) -->
+      <div class="tiny muted">Raccourcis: N note · T tâche · E e-mails</div>
+    </aside>
+
+    <!-- MAIN content -->
+    <main class="flex-1 p-8 overflow-auto">
+      <!-- header -->
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight">Tableau de bord logement</h1>
+          <div class="tiny muted">Rachid OUBAKH · centralise tes démarches et preuves</div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="text-right tiny muted">
+            <div>Aujourd'hui</div>
+            <div id="todayTop" class="font-bold">—</div>
+          </div>
+          <div class="flex items-center gap-3 glass p-2 rounded">
+            <div class="tiny muted">Dernière MAJ</div>
+            <div id="lastUpdate" class="font-semibold">—</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- layout grid -->
+      <section class="grid grid-cols-12 gap-6">
+
+        <!-- Left: large column -->
+        <div class="col-span-8 space-y-6">
+
+          <!-- Summary card with progress and quick facts -->
+          <section class="glass p-5 flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-4">
+                <div class="p-3 rounded-lg" style="background:linear-gradient(135deg,#7c3aed33,#06b6d433);border-radius:12px">
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M12 3v10l3 3" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div>
+                  <div class="text-xl font-semibold">Statut: Hébergement familial (pas de bail)</div>
+                  <div class="tiny muted">Visale expirée · APL simulée: ~343€/mois</div>
+                </div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-3 gap-4">
+                <div class="p-3 glass rounded kpi">
+                  <div class="tiny muted">Revenus</div>
+                  <div class="text-2xl font-bold">1 000€/mois</div>
+                  <div class="tiny muted">Simulation APL: <strong>~343€</strong></div>
+                </div>
+                <div class="p-3 glass rounded kpi">
+                  <div class="tiny muted">Entrée</div>
+                  <div class="text-2xl font-bold" id="kEntryLarge">11/06/2025</div>
+                  <div class="tiny muted">Ordonnance JAP: <strong id="kJAPLarge">06/06/2025</strong></div>
+                </div>
+                <div class="p-3 glass rounded kpi">
+                  <div class="tiny muted">SPIP / PAIRS</div>
+                  <div class="text-2xl font-bold">RDV: 22/08/2025</div>
+                  <div class="tiny muted">Contacts notés</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="width:280px" class="ml-6">
+              <div class="tiny muted mb-2">Avancement documents</div>
+              <div class="w-full bg-white/6 rounded-full h-3 overflow-hidden mb-2"><div id="progressBar" class="h-3 rounded-full" style="width:20%;background:linear-gradient(90deg,var(--accent),#8b5cf6)"></div></div>
+              <div class="tiny muted">3 / 6 fournis</div>
+              <div class="mt-4 flex flex-col gap-2">
+                <button id="openChecklist" class="btn accent">Gérer documents</button>
+                <button id="openAttest" class="btn" style="background:rgba(255,255,255,0.03)">Préparer attestation</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Documents / checklist interactive -->
+          <section id="tab-documents" class="glass p-5 fade-in">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="font-semibold text-lg">Checklist & Documents prioritaires</h2>
+              <div class="tiny muted">Clique pour marquer comme fourni</div>
+            </div>
+            <div id="docList" class="grid grid-cols-2 gap-3"></div>
+            <div class="mt-4 flex gap-2">
+              <button id="addDocBtn" class="btn accent">+ Ajouter document</button>
+              <button id="exportPack" class="btn" style="background:rgba(255,255,255,0.03)">Exporter pack</button>
+            </div>
+          </section>
+
+          <!-- Timeline & risks -->
+          <section id="tab-overview" class="glass p-5 fade-in">
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold">Timeline & Risques</h3>
+              <div class="tiny muted">Priorités : haute / moyenne / faible</div>
+            </div>
+            <div id="timeline" class="mt-3 space-y-3"></div>
+          </section>
+
+          <!-- Email import & parsing -->
+          <section id="tab-emails" class="glass p-5 fade-in">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold">Import d'e-mails (dump)</h3>
+              <div class="tiny muted">Extraction automatique: @groupe-sos.org</div>
+            </div>
+            <textarea id="emailDump" rows="5" class="w-full p-3 rounded bg-transparent border border-white/6 tiny" placeholder="Colle l'export brut d'e-mails ici..."></textarea>
+            <div class="mt-3 flex gap-2">
+              <button id="extractBtn" class="btn accent">Extraire @groupe-sos.org</button>
+              <button id="copyEmailsBtn" class="btn" style="background:rgba(255,255,255,0.03)">Copier</button>
+              <button id="csvBtn" class="btn" style="background:rgba(255,255,255,0.03)">Télécharger CSV</button>
+            </div>
+            <pre id="emailsOut" class="mt-3 tiny muted"></pre>
+          </section>
+
+        </div>
+
+        <!-- Right: compact column -->
+        <aside class="col-span-4 space-y-6">
+
+          <div class="glass p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-semibold">Bilan résumé</div>
+                <div class="tiny muted">Faits essentiels & actions rapides</div>
+              </div>
+              <div class="tiny muted">PDF prêt</div>
+            </div>
+            <div class="mt-3 tiny">
+              <ul class="list-disc pl-4 space-y-1">
+                <li>Adresse: <strong id="addrSmall">25 rue des déportés</strong></li>
+                <li>Entrée: <strong id="entrySmall">11/06/2025</strong></li>
+                <li>Visale: <strong id="visaleSmall">expirée 10/06/2025</strong></li>
+                <li>APL estimée: <strong id="aplSmall">~343€/mois</strong></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="glass p-4">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold">HLM / CAF</div>
+              <div class="tiny muted">Suivi via PAIRS</div>
+            </div>
+            <div class="mt-3 tiny muted">Demande numéro de dossier & pièces manquantes</div>
+            <div class="mt-4"><button id="mailCharlotte" class="btn accent w-full">Préparer mail → Charlotte</button></div>
+          </div>
+
+          <div class="glass p-4">
+            <div class="font-semibold">Contacts clés</div>
+            <div class="tiny mt-2">secretariat.alip-beauvais@justice.fr<br/>social8.pairs75@groupe-sos.org</div>
+            <div class="mt-3"><button id="copyContactsBtn" class="btn" style="background:rgba(255,255,255,0.03)">Copier</button></div>
+          </div>
+
+          <div class="glass p-4">
+            <div class="font-semibold">Notes rapides</div>
+            <textarea id="notes" rows="6" class="w-full mt-2 p-2 bg-transparent border border-white/6 rounded tiny"></textarea>
+            <div class="mt-2 flex gap-2"><button id="saveNotes" class="btn accent">Sauvegarder</button><button id="clearNotes" class="btn" style="background:rgba(255,255,255,0.03)">Effacer</button></div>
+          </div>
+
+        </aside>
+
+      </section>
+
+      <!-- Attestation modal (hidden) -->
+      <div id="attestModal" style="display:none" class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative w-[900px] p-6 glass">
+          <div class="flex items-start justify-between">
+            <h3 class="font-semibold text-lg">Attestation d'hébergement — aperçu</h3>
+            <button id="closeAttest" class="tiny muted">Fermer ✕</button>
+          </div>
+          <pre id="attestText" class="mt-4 p-4 bg-white/3 rounded text-sm" style="white-space:pre-wrap"></pre>
+          <div class="mt-4 flex gap-2 justify-end">
+            <button id="copyAttestBtn" class="btn">Copier</button>
+            <button id="printAttestBtn" class="btn accent">Imprimer / PDF</button>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
-  <footer class="bg-white border-t mt-8">
-    <div class="max-w-6xl mx-auto px-4 py-6 text-sm text-gray-600 flex justify-between">
-      <div>© <strong>EDISYNCHRO</strong></div>
-      <div><a href="/" class="hover:underline">Retour accueil</a></div>
-    </div>
-  </footer>
+  <script>
+    // --- initial state (from ton bilan) ---
+    const state = {
+      person:{name:'Rachid OUBAKH', dob:'23/10/1997', dossier:'201900074278'},
+      address:'25 rue des déportés, 60000 Beauvais',
+      entry:'11/06/2025', jap:'06/06/2025', visale:'10/06/2025', income:1000, apl:343,
+      docs:[
+        {id:'attest_heb',label:"Attestation d'hébergement signée",done:false},
+        {id:'jap',label:'Ordonnance JAP (06/06/2025) - scan',done:true},
+        {id:'courrier',label:'Courriers officiels reçus à l\'adresse',done:true},
+        {id:'visale',label:'Preuve Visale (expirée)',done:true},
+        {id:'hca',label:'Mise à jour dossier HLM / numéro de suivi',done:false}
+      ],
+      timeline:[
+        {date:'2025-06-06',title:'Ordonnance JAP — décision',prio:'high'},
+        {date:'2025-06-10',title:'Visale expirée',prio:'med'},
+        {date:'2025-07-10',title:'SPIP notification',prio:'med'},
+        {date:'2025-08-22',title:'RDV SPIP — Beauvais',prio:'high'}
+      ],
+      emails:[]
+    };
+
+    // DOM seeds
+    document.getElementById('todayTop').textContent = new Date().toLocaleDateString('fr-FR');
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('fr-FR');
+    document.getElementById('kEntryLarge').textContent = state.entry;
+    document.getElementById('kJAPLarge').textContent = state.jap;
+    document.getElementById('addrSmall').textContent = state.address;
+    document.getElementById('entrySmall').textContent = state.entry;
+    document.getElementById('visaleSmall').textContent = 'expirée '+state.visale;
+    document.getElementById('aplSmall').textContent = '~'+state.apl+'€/mois';
+    document.getElementById('addrSidebar').textContent = state.address;
+    document.getElementById('entryP').textContent = state.entry;
+    document.getElementById('japP').textContent = state.jap;
+
+    // render docs
+    const docList = document.getElementById('docList');
+    function renderDocs(){
+      docList.innerHTML = '';
+      state.docs.forEach(d=>{
+        const card = document.createElement('div'); card.className='p-3 rounded glass flex items-start gap-3';
+        card.innerHTML = `
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold">${d.label}</div>
+              <div class="tiny muted">${d.done?'<span class="pill" style="background:#052e19;color:#bbf7d0">fourni</span>':'<span class="pill" style="background:#3b0b0b;color:#ffd6d6">à fournir</span>'}</div>
+            </div>
+            <div class="tiny muted mt-2">ID: ${d.id}</div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <button data-id="${d.id}" class="markDone btn" style="background:rgba(255,255,255,0.03)">${d.done?'Annuler':'Marquer'}</button>
+            <button data-id="${d.id}" class="removeDoc btn" style="background:rgba(255,255,255,0.03)">Suppr</button>
+          </div>
+        `;
+        docList.appendChild(card);
+      });
+      updateProgress();
+      attachDocHandlers();
+    }
+    function attachDocHandlers(){
+      document.querySelectorAll('.markDone').forEach(b=>b.onclick = ()=>{
+        const id = b.dataset.id; const d=state.docs.find(x=>x.id===id); if(d) d.done = !d.done; renderDocs(); save();
+      });
+      document.querySelectorAll('.removeDoc').forEach(b=>b.onclick = ()=>{
+        const id = b.dataset.id; state.docs = state.docs.filter(x=>x.id!==id); renderDocs(); save();
+      });
+    }
+    renderDocs();
+
+    // progress
+    function updateProgress(){
+      const total = state.docs.length; const done = state.docs.filter(d=>d.done).length; const pct = total? Math.round(done/total*100):0;
+      document.getElementById('progressBar').style.width = pct+'%';
+      // set color
+      if(pct>70) document.getElementById('progressBar').style.background='linear-gradient(90deg,#10b981,#06b6d4)';
+      else document.getElementById('progressBar').style.background='linear-gradient(90deg,var(--accent),#8b5cf6)';
+    }
+
+    // timeline
+    const timelineEl = document.getElementById('timeline');
+    function renderTimeline(){
+      timelineEl.innerHTML='';
+      state.timeline.forEach(item=>{
+        const el = document.createElement('div'); el.className='flex items-start gap-3';
+        const color = item.prio==='high'? 'bg-red-400':'med'===item.prio? 'bg-yellow-400' : 'bg-green-400';
+        el.innerHTML = `<div class="w-10 text-right tiny muted">${new Date(item.date).toLocaleDateString('fr-FR')}</div><div class="flex-1 p-3 rounded glass"><div class="font-semibold">${item.title}</div><div class="tiny muted mt-1">Priorité: ${item.prio}</div></div>`;
+        timelineEl.appendChild(el);
+      });
+    }
+    renderTimeline();
+
+    // add doc
+    document.getElementById('addDocBtn').addEventListener('click', ()=>{
+      const label = prompt('Titre du document'); if(!label) return; const id = 'd_'+Date.now(); state.docs.push({id,label,done:false}); renderDocs(); save();
+    });
+
+    // export pack (simple zip fallback)
+    document.getElementById('exportPack').addEventListener('click', async ()=>{
+      const meta = {person:state.person,address:state.address,entry:state.entry,jap:state.jap};
+      const attest = genAttestation();
+      const files = [{name:'meta.json',content:JSON.stringify(meta,null,2)},{name:'attestation.txt',content:attest}];
+      const blob = new Blob([files.map(f=>`=== ${f.name} ===\n${f.content}\n`).join('\n')],{type:'text/plain'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='pack_logement_'+Date.now()+'.txt'; a.click(); URL.revokeObjectURL(a.href);
+    });
+
+    // attestation modal
+    const attestModal = document.getElementById('attestModal');
+    document.getElementById('openAttest').addEventListener('click', ()=>{ document.getElementById('attestText').textContent = genAttestation(); attestModal.style.display = 'flex'; });
+    document.getElementById('closeAttest').addEventListener('click', ()=>{ attestModal.style.display='none'});
+    document.getElementById('quickAttest').addEventListener('click', ()=>{ document.getElementById('attestText').textContent = genAttestation(); attestModal.style.display='flex'; });
+    document.getElementById('copyAttestBtn').addEventListener('click', ()=>{ navigator.clipboard.writeText(document.getElementById('attestText').textContent); alert('Attestation copiée'); });
+    document.getElementById('printAttestBtn').addEventListener('click', ()=>{ const w = window.open('','_blank'); w.document.write('<pre style="font-family:Arial;padding:24px">'+document.getElementById('attestText').textContent.replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); w.print(); });
+
+    function genAttestation(){
+      return `Je, ${state.person.name}, né(e) le ${state.person.dob}, dossier n° ${state.person.dossier}, atteste par la présente être hébergé(e) à titre gratuit au ${state.address} depuis le ${state.entry}.\n\nCette attestation est fournie pour démarches administratives (CAF, HLM, SPIP, PAIRS).\n\nPièces recommandées : ordonnance JAP (${state.jap}), copies de courriers reçus, pièce identité de l'hébergeant, justificatif de domicile au nom de l'hébergeant.\n\nFait le ${new Date().toLocaleDateString('fr-FR')}\n`;
+    }
+
+    // email extraction
+    document.getElementById('extractBtn').addEventListener('click', ()=>{
+      const raw = document.getElementById('emailDump').value; if(!raw) return alert('Colle l\'export d\'emails');
+      const re = /[A-Z0-9._%+-]+@groupe-sos\.org/ig; const found = Array.from(new Set((raw.match(re)||[]).map(s=>s.toLowerCase())));
+      state.emails = found; document.getElementById('emailsOut').textContent = found.length? found.join('\n') : 'Aucune adresse @groupe-sos.org trouvée';
+    });
+    document.getElementById('copyEmailsBtn').addEventListener('click', ()=>{ if(!state.emails.length) return alert('Aucune adresse'); navigator.clipboard.writeText(state.emails.join(', ')); alert('Adresses copiées'); });
+    document.getElementById('csvBtn').addEventListener('click', ()=>{ if(!state.emails.length) return alert('Aucune adresse'); const csv='email\n'+state.emails.join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='emails_groupe-sos.csv'; a.click(); URL.revokeObjectURL(a.href); });
+
+    // mail to Charlotte
+    document.getElementById('mailCharlotte').addEventListener('click', ()=>{
+      const subj=encodeURIComponent('Mise à jour dossier logement — demande suivi HLM / CAF');
+      const body=encodeURIComponent(`Bonjour Charlotte,\n\nJe vous confirme mon adresse actuelle: ${state.address} (entrée ${state.entry}). Visale expirée le ${state.visale}. Pouvez-vous me confirmer le numéro de dossier HLM et listes pièces manquantes ?\n\nMerci,\n${state.person.name}`);
+      window.location.href = `mailto:social8.pairs75@groupe-sos.org?subject=${subj}&body=${body}`;
+    });
+
+    // contacts
+    document.getElementById('copyContactsBtn').addEventListener('click', ()=>{ navigator.clipboard.writeText('secretariat.alip-beauvais@justice.fr, social8.pairs75@groupe-sos.org'); alert('Contacts copiés'); });
+
+    // notes
+    document.getElementById('saveNotes').addEventListener('click', ()=>{ localStorage.setItem('notes', document.getElementById('notes').value); alert('Notes sauvées'); });
+    document.getElementById('clearNotes').addEventListener('click', ()=>{ document.getElementById('notes').value=''; localStorage.removeItem('notes'); });
+    document.getElementById('notes').value = localStorage.getItem('notes')||'';
+
+    // shortcuts
+    window.addEventListener('keydown',(e)=>{
+      if(e.key==='n'){ const v=prompt('Note rapide:'); if(v){ const n=localStorage.getItem('notes')||''; localStorage.setItem('notes', n+'\n'+v); alert('Note ajoutée'); }}
+      if(e.key==='t'){ const t=prompt('Nouvelle tâche:'); if(t){ state.timeline.push({date:new Date().toISOString().slice(0,10),title:t,prio:'med'}); renderTimeline(); save(); alert('Tâche ajoutée'); }}
+      if(e.key==='e'){ document.getElementById('emailDump').focus(); }
+    });
+
+    // tabs navigation
+    document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click', ()=>{
+      const tab = b.dataset.tab; // show/hide basic (we have dedicated sections)
+      document.querySelectorAll('#tab-overview,#tab-documents,#tab-emails').forEach(el=>el.style.display='none');
+      if(tab==='overview') document.getElementById('tab-overview').style.display='block';
+      if(tab==='documents') document.getElementById('tab-documents').style.display='block';
+      if(tab==='emails') document.getElementById('tab-emails').style.display='block';
+      if(tab==='hlm') { document.getElementById('tab-overview').style.display='block'; }
+    }));
+
+    // init: show overview + documents
+    document.getElementById('tab-overview').style.display='block'; document.getElementById('tab-documents').style.display='block'; document.getElementById('tab-emails').style.display='none';
+
+    // persistence
+    function save(){ localStorage.setItem('dashboard_logement', JSON.stringify(state)); }
+    window.addEventListener('beforeunload', save);
+
+    // load if exists
+    const saved = localStorage.getItem('dashboard_logement'); if(saved){ try{ Object.assign(state, JSON.parse(saved)); renderDocs(); renderTimeline(); }catch(e){} }
+
+  </script>
 </body>
 </html>
